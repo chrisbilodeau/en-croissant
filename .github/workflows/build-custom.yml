@@ -1,10 +1,17 @@
 name: build-custom
 on:
+  workflow_run:
+    workflows:
+      - test-custom
+    types:
+      - completed
+    branches:
+      - custom
   workflow_dispatch:
-  push: # need to trigger once automatically to show on github.com
 
 jobs:
   release:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     permissions:
       contents: write
     strategy:
