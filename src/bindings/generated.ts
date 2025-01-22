@@ -349,6 +349,14 @@ async getPuzzleDbInfo(file: string) : Promise<Result<PuzzleDatabaseInfo, string>
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
 }
+},
+async setTitlebarDecorationsAndRestart(enableDecorations: boolean) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("set_titlebar_decorations_and_restart", { enableDecorations }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
 }
 }
 

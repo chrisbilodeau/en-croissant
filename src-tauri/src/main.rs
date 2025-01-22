@@ -13,6 +13,7 @@ mod oauth;
 mod opening;
 mod pgn;
 mod puzzle;
+mod window;
 
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
@@ -27,8 +28,9 @@ use log::LevelFilter;
 use oauth::AuthState;
 use sysinfo::SystemExt;
 use tauri::path::BaseDirectory;
-use tauri::{Manager, Window};
+use tauri::{Manager, TitleBarStyle, WebviewUrl, WebviewWindowBuilder, Window};
 use tauri_plugin_log::{Target, TargetKind};
+use window::set_titlebar_decorations_and_restart;
 
 use crate::chess::{
     analyze_game, get_engine_config, get_engine_logs, kill_engine, kill_engines, stop_engine,
@@ -154,7 +156,8 @@ fn main() {
             get_games,
             search_position,
             get_players,
-            get_puzzle_db_info
+            get_puzzle_db_info,
+            set_titlebar_decorations_and_restart
         ))
         .events(tauri_specta::collect_events!(
             BestMovesPayload,
@@ -224,6 +227,15 @@ fn main() {
 
             // #[cfg(any(windows, target_os = "macos"))]
             // set_shadow(&app.get_webview_window("main").unwrap(), true).unwrap();
+
+            let win_builder = WebviewWindowBuilder::new(app, "main", WebviewUrl::default())
+                .hidden_title(true)
+                .inner_size(1570.0, 1170.0);
+
+            #[cfg(target_os = "macos")]
+            let win_builder = win_builder.title_bar_style(TitleBarStyle::Overlay);
+
+            let _window = win_builder.build().expect("Unable to build main window");
 
             specta_builder.mount_events(app);
 

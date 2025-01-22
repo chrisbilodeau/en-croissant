@@ -63,19 +63,11 @@
   },
   "app": {
     "withGlobalTauri": false,
-    "windows": [
-      {
-        "title": "En Croissant",
-        "maximized": true,
-        "visible": false,
-        "decorations": true
-      }
-    ],
+    "windows": [],
+    "macOSPrivateApi": true,
     "security": {
       "assetProtocol": {
-        "scope": [
-          "**"
-        ],
+        "scope": ["**"],
         "enable": true
       },
       "csp": null

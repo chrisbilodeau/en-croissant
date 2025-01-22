@@ -1,6 +1,7 @@
 import type { Dirs } from "@/App";
 import AboutModal from "@/components/About";
 import { SideBar } from "@/components/Sidebar";
+import BlankTopBar from "@/components/BlankTopBar";
 import TopBar from "@/components/TopBar";
 import { activeTabAtom, nativeBarAtom, tabsAtom } from "@/state/atoms";
 import { keyMapAtom } from "@/state/keybinds";
@@ -231,10 +232,8 @@ function RootLayout() {
     if (!menu) return;
     if (isNative) {
       menu.setAsAppMenu();
-      getCurrentWindow().setDecorations(true);
     } else {
       Menu.new().then((m) => m.setAsAppMenu());
-      getCurrentWindow().setDecorations(false);
     }
   }, [menu, isNative]);
 
@@ -244,13 +243,7 @@ function RootLayout() {
         width: "3rem",
         breakpoint: 0,
       }}
-      header={
-        isNative
-          ? undefined
-          : {
-              height: "2.5rem",
-            }
-      }
+      header={isNative ? { height: "1.75rem" } : { height: "2.5rem" }}
       styles={{
         main: {
           height: "100vh",
@@ -259,7 +252,11 @@ function RootLayout() {
       }}
     >
       <AboutModal opened={opened} setOpened={setOpened} />
-      {!isNative && (
+      {isNative ? (
+        <AppShell.Header withBorder={false}>
+          <BlankTopBar />
+        </AppShell.Header>
+      ) : (
         <AppShell.Header>
           <TopBar menuActions={menuActions} />
         </AppShell.Header>

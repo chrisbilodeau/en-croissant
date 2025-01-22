@@ -43,8 +43,10 @@ import {
   IconReload,
   IconVolume,
 } from "@tabler/icons-react";
+
+import { commands } from "@/bindings";
 import { useLoaderData } from "@tanstack/react-router";
-import { open } from "@tauri-apps/plugin-dialog";
+import { ask, open } from "@tauri-apps/plugin-dialog";
 import { useAtom } from "jotai";
 import { RESET } from "jotai/utils";
 import { useTranslation } from "react-i18next";
@@ -517,10 +519,19 @@ export default function Page() {
                 </div>
                 <Select
                   allowDeselect={false}
-                  data={["Native", "Custom"]}
+                  data={["Custom", "Native"]}
                   value={isNative ? "Native" : "Custom"}
-                  onChange={(val) => {
-                    setIsNative(val === "Native");
+                  onChange={async (val) => {
+                    const restart = await ask(
+                      "The app must be restarted to apply this setting. Any unsaved work will be lost. Continue?",
+                      { title: "App Restart Required" },
+                    );
+                    if (restart) {
+                      setIsNative(val === "Native");
+                      val === "Native"
+                        ? commands.setTitlebarDecorationsAndRestart(true)
+                        : commands.setTitlebarDecorationsAndRestart(false);
+                    }
                   }}
                 />
               </Group>

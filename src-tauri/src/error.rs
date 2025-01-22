@@ -29,6 +29,9 @@ pub enum Error {
     TauriOpener(#[from] tauri_plugin_opener::Error),
 
     #[error(transparent)]
+    TauriWindowState(#[from] tauri_plugin_window_state::Error),
+
+    #[error(transparent)]
     Reqwest(#[from] reqwest::Error),
 
     #[error(transparent)]

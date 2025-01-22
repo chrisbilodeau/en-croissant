@@ -20,6 +20,7 @@ import type { OpponentSettings } from "@/components/boards/BoardGame";
 import { positionFromFen, swapMove } from "@/utils/chessops";
 import type { SuccessDatabaseInfo } from "@/utils/db";
 import { getWinChance, normalizeScore } from "@/utils/score";
+import { platform } from "@tauri-apps/plugin-os";
 import { parseUci } from "chessops";
 import { INITIAL_FEN, makeFen } from "chessops/fen";
 import equal from "fast-deep-equal";
@@ -182,7 +183,26 @@ export const primaryColorAtom = atomWithStorage<MantineColor>(
   "blue",
 );
 export const sessionsAtom = atomWithStorage<Session[]>("sessions", []);
-export const nativeBarAtom = atomWithStorage<boolean>("native-bar", false);
+
+function nativeBarDefault(): boolean {
+  let osPlatform = "";
+  try {
+    osPlatform = platform();
+  } catch (_) {
+    console.warn(
+      "Unable to get OS platform. If running tests this can be safely ignored.",
+    );
+  }
+  if (osPlatform === "macos") {
+    return true;
+  }
+  return false;
+}
+
+export const nativeBarAtom = atomWithStorage<boolean | Promise<boolean>>(
+  "native-bar",
+  nativeBarDefault(),
+);
 
 // Database
 
