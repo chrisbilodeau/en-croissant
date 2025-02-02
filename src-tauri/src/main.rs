@@ -25,7 +25,6 @@ use derivative::Derivative;
 use fide::FidePlayer;
 use log::LevelFilter;
 use oauth::AuthState;
-use specta_typescript::{BigIntExportBehavior, Typescript};
 use sysinfo::SystemExt;
 use tauri::path::BaseDirectory;
 use tauri::{Manager, Window};
@@ -167,21 +166,22 @@ fn main() {
     #[cfg(debug_assertions)]
     specta_builder
         .export(
-            Typescript::default().bigint(BigIntExportBehavior::BigInt),
+            specta_typescript::Typescript::default()
+                .bigint(specta_typescript::BigIntExportBehavior::BigInt),
             "../src/bindings/generated.ts",
         )
         .expect("Failed to export types");
 
-    #[cfg(debug_assertions)]
-    let log_targets = [TargetKind::Stdout, TargetKind::Webview];
-
-    #[cfg(not(debug_assertions))]
-    let log_targets = [
-        TargetKind::Stdout,
-        TargetKind::LogDir {
-            file_name: Some(String::from("en-croissant.log")),
-        },
-    ];
+    let log_targets = if cfg!(debug_assertions) {
+        [TargetKind::Stdout, TargetKind::Webview]
+    } else {
+        [
+            TargetKind::Stdout,
+            TargetKind::LogDir {
+                file_name: Some(String::from("en-croissant")),
+            },
+        ]
+    };
 
     tauri::Builder::default()
         .plugin(tauri_plugin_window_state::Builder::new().build())
@@ -194,6 +194,7 @@ fn main() {
         )
         .invoke_handler(specta_builder.invoke_handler())
         .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_dialog::init())

@@ -2,6 +2,7 @@ use shakmaty::Chess;
 use specta::Type;
 
 #[derive(Debug, thiserror::Error)]
+#[allow(dead_code)]
 pub enum Error {
     #[error(transparent)]
     Io(#[from] std::io::Error),
@@ -25,7 +26,7 @@ pub enum Error {
     Tauri(#[from] tauri::Error),
 
     #[error(transparent)]
-    TauriShell(#[from] tauri_plugin_shell::Error),
+    TauriOpener(#[from] tauri_plugin_opener::Error),
 
     #[error(transparent)]
     Reqwest(#[from] reqwest::Error),
